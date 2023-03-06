@@ -19,11 +19,10 @@ function apiCall(query, pages) {
     )
     .then((response) => {
       console.log(response.data);
-      if (response.data.Response == "True"){
+      if (response.data.Response == "True") {
         events.value = response.data.Search;
         showBtn.value = true;
-      } 
-      else showBtn.value=false;
+      } else showBtn.value = false;
     })
     .catch((error) => {
       console.log(error);
@@ -38,7 +37,7 @@ function changeHandler(e) {
   //e.target.value = '';
 }
 
-function changePage(){
+function changePage() {
   pages.value += 1;
   apiCall(query.value, pages.value);
 }
@@ -53,7 +52,9 @@ function changePage(){
   <div class="home">
     <EventCard v-for="event in events" :key="event.imdbID" :event="event" />
   </div>
-  <v-btn v-if="showBtn" @click="changePage()"> Button </v-btn>
+  <div class="btn">
+    <v-btn class="btn" v-if="showBtn" @click="changePage()"> Button </v-btn>
+  </div>
 </template>
 
 <style>
@@ -72,5 +73,9 @@ form {
 }
 .input {
   border: 1px solid black;
+}
+.btn {
+  display: flex;
+  justify-content: center;
 }
 </style>
