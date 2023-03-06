@@ -5,7 +5,8 @@ import axios from "axios";
 
 const events = ref(null);
 const query = ref("");
-const pages = ref(2);
+const pages = ref(1);
+const showBtn = ref(false);
 
 function apiCall(query, pages) {
   axios
@@ -18,7 +19,11 @@ function apiCall(query, pages) {
     )
     .then((response) => {
       console.log(response.data);
-      if (response.data.Response == "True") events.value = response.data.Search;
+      if (response.data.Response == "True"){
+        events.value = response.data.Search;
+        showBtn.value = true;
+      } 
+      else showBtn.value=false;
     })
     .catch((error) => {
       console.log(error);
@@ -48,7 +53,7 @@ function changePage(){
   <div class="home">
     <EventCard v-for="event in events" :key="event.imdbID" :event="event" />
   </div>
-  <v-btn @click="changePage()"> Button </v-btn>
+  <v-btn v-if="showBtn" @click="changePage()"> Button </v-btn>
 </template>
 
 <style>
