@@ -7,22 +7,32 @@ const events = ref(null);
 const query = ref("");
 const pages = ref(1);
 const showBtn = ref(false);
+const showAlert = ref(false);
 
-function apiCall(query, pages) {
+
+function apiCall(query, page) {
   axios
     .get(
       "https://www.omdbapi.com/?s=" +
         query +
         "&page=" +
-        pages +
+        page +
         "&apikey=643f294a"
     )
     .then((response) => {
       console.log(response.data);
       if (response.data.Response == "True") {
-        events.value = response.data.Search;
-        showBtn.value = true;
-      } else showBtn.value = false;
+        if(pages.value === 1){
+          events.value = response.data.Search;
+        }else {
+          const mergedArray = [...events.value, ...response.data.Search];
+          events.value = mergedArray;
+        }
+        if(response.data.Search.length == '10'){
+          showBtn.value = true;
+        } else showBtn.value = false;
+        showAlert.value = false;
+      } else showAlert.value = true;
     })
     .catch((error) => {
       console.log(error);
@@ -32,8 +42,10 @@ function apiCall(query, pages) {
 function changeHandler(e) {
   if (e.target.value.length > 0) {
     query.value = e.target.value;
+    apiCall(query.value);
+  } else {
+    showAlert.value = false;
   }
-  apiCall(query.value);
   //e.target.value = '';
 }
 
@@ -48,12 +60,20 @@ function changePage() {
     <form @submit.prevent="" :onKeyup="changeHandler">
       <input class="input" type="text" placeholder="search movie" />
     </form>
+    <v-alert
+      v-if="showAlert"
+      color="error"
+      icon="$error"
+      text="Nem letező film címet adott meg!"
+    ></v-alert>
   </div>
   <div class="home">
     <EventCard v-for="event in events" :key="event.imdbID" :event="event" />
   </div>
   <div class="btn">
-    <v-btn class="btn" v-if="showBtn" @click="changePage()"> Button </v-btn>
+    <v-btn class="btn" v-if="showBtn" @click="changePage()">
+      Következő oldal
+    </v-btn>
   </div>
 </template>
 
